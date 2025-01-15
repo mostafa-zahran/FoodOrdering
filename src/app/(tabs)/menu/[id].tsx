@@ -3,13 +3,15 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import products from '@/assets/data/products';
 import { Product } from '@/src/types';
 
+const defaultPizzaImage = 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png'
+
 const productDetails = () => {
     const { id } = useLocalSearchParams();
     const product = products.find((p) => p.id === parseInt(id as string)) as Product;
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: product.name }} />
-            <Image source={{ uri: product.image }} style={styles.image} />
+            <Image source={{ uri: product.image || defaultPizzaImage }} style={styles.image} />
             <Text style={styles.name}>{product.name}</Text>
             <Text style={styles.price}>${product.price}</Text>
         </View>

@@ -8,7 +8,7 @@ type ProductListItemProps = {
   product: Product
 }
 
-export default ProductListItem = ({product} : ProductListItemProps) => {
+const ProductListItem = ({product} : ProductListItemProps) => {
   return (
     <View style={styles.container}>
       <Image source={{uri: product.image || defaultPizzaImage}} style={styles.image}/>
@@ -17,6 +17,8 @@ export default ProductListItem = ({product} : ProductListItemProps) => {
     </View>
   );
 }
+
+export default ProductListItem;
 
 const styles = StyleSheet.create({
   container: {

@@ -9,7 +9,7 @@ const MenuStack = () => {
             <Stack.Screen name="index" options={{ 
                 title: "menu",
                 headerRight: () => (
-                    <Link href="/" asChild>
+                    <Link href="/(admin)/menu/create" asChild>
                         <Pressable>
                             {({ pressed }) => (
                             <FontAwesome

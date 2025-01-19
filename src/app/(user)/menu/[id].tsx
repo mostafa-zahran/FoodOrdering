@@ -5,8 +5,8 @@ import { Product, PizzaSize } from '@/src/types';
 import  { useState} from 'react';
 import Button from '@/src/components/Button';
 import { useCart } from '@/src/providers/cartProvider';
+import defaultPizzaImage from '@/src/constants/DefaultPizzaImage';
 
-const defaultPizzaImage = 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png'
 const PizzaSizes : PizzaSize[] = ['S', 'M', 'L', 'XL'];
 const productDetails = () => {
     const { id } = useLocalSearchParams();

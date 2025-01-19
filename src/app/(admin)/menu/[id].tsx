@@ -2,9 +2,8 @@ import { Stack, useLocalSearchParams  } from 'expo-router';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import products from '@/assets/data/products';
 import { Product } from '@/src/types';
+import defaultPizzaImage from '@/src/constants/DefaultPizzaImage';
 
-
-const defaultPizzaImage = 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png'
 const productDetails = () => {
     const { id } = useLocalSearchParams();
     const product = products.find((p) => p.id === parseInt(id as string)) as Product;

@@ -1,40 +1,56 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import products from '@/assets/data/products';
-import { Product } from '@/src/types';
+import { Product, PizzaSize } from '@/src/types';
+import  { useState} from 'react';
+import Button from '@/src/components/Button';
 
 const defaultPizzaImage = 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png'
-
+const PizzaSizes : PizzaSize[] = ['S', 'M', 'L', 'XL'];
 const productDetails = () => {
     const { id } = useLocalSearchParams();
+    const [selectedSize, setSelectedSize] = useState<PizzaSize>('M');
     const product = products.find((p) => p.id === parseInt(id as string)) as Product;
+    const addToCard = () => {
+        console.warn(`Added to cart: ${product.name}, ${selectedSize}`);
+    }
+    if(!product) {
+        return <Text>Product not found</Text>
+    }
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: product.name }} />
             <Image source={{ uri: product.image || defaultPizzaImage }} style={styles.image} />
-            <Text style={styles.name}>{product.name}</Text>
+            <Text>Select Size</Text>
+            <View style={styles.sizes}>
+                {PizzaSizes.map((size) => (
+                    <Pressable 
+                      style={ size === selectedSize ? selectedStyles.size : styles.size}  
+                      key={size}
+                      onPress={() => setSelectedSize(size)}
+                    >
+                        <Text style={ size === selectedSize ? selectedStyles.sizeText : styles.sizeText}>{size}</Text>
+                    </Pressable>
+                ))}
+            </View>
             <Text style={styles.price}>${product.price}</Text>
+            <Button 
+              onPress={addToCard}
+              text='Add to cart'
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 5 },
-        elevation: 5,
-        marginBottom: 16,
+        backgroundColor: 'white',
+        flex: 1,
+        padding: 10,
     },
     image: {
         width: '100%',
-        height: 200,
-        borderRadius: 8,
-        marginBottom: 16,
+        aspectRatio: 1,
     },
     name: {
         fontSize: 18,
@@ -42,10 +58,38 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     price: {
-        fontSize: 16,
         fontWeight: 'bold',
-        color: '#000',
+        fontSize: 18,
+        marginTop: 'auto',
+    },
+    sizes: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginVertical: 10,
+    },
+    size: {
+        backgroundColor: 'white',
+        width: 50,
+        aspectRatio: 1,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    sizeText: {
+        color: 'gray',
+        fontSize: 20,
+        fontWeight: '500',
     },
 });
 
+const selectedStyles = StyleSheet.create({
+    size: { 
+        ...styles.size,
+        backgroundColor: 'gainsboro',
+     },
+     sizeText: {
+        ...styles.sizeText,
+        color: 'black',
+    },
+});
 export default productDetails;

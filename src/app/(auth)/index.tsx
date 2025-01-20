@@ -3,12 +3,14 @@ import {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, } from 'react-native';
 import Colors from '@/src/constants/Colors';
 import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
+import { supabase } from '@/src/lib/supabase';
 
 const SignInScreen = () => {
     const { new_user } = useLocalSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(''); 
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const isNewUser = new_user === 'true';
@@ -26,16 +28,36 @@ const SignInScreen = () => {
     }
 
     const onSubmit = () => {
+        setLoading(true);
         if (!validate()){
             return
         }
         console.log('Submiting...');
         if (isNewUser) {
-            console.log('SignUp');
+            onSignUp();
         } else {
-            console.log('SignIn');
+            onSignIn();
         }
+        setLoading(false);
     };
+
+    const onSignUp = async () => {
+        const { error } = await supabase.auth.signUp({email,password});
+        if (error) {
+            setError(error.message);
+        } else {
+            console.log('SignedUp');
+        }
+    }
+
+    const onSignIn = async () => {
+        const { error } = await supabase.auth.signInWithPassword({email,password});
+        if (error) {
+            setError(error.message);
+        } else {
+            console.log('SignedIn');
+        }
+    }
 
     const goToSignUp = () => {
         router.push('/(auth)?new_user=true');
@@ -67,7 +89,7 @@ const SignInScreen = () => {
             <TextInput value={password} onChangeText={setPassword} style={styles.input} secureTextEntry={true} />
 
             <Text style={{color: 'red'}}>{error}</Text>
-            <Button text={isNewUser ? "SignUp" : "Sign In"} onPress={onSubmit}/>
+            <Button disabled={loading} text={isNewUser ? "SignUp" : "Sign In"} onPress={onSubmit}/>
             {secondaryButtonTemplate()}
         </View>
     );

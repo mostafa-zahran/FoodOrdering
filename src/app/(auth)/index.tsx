@@ -2,7 +2,7 @@ import Button from '@/src/components/Button';
 import {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, } from 'react-native';
 import Colors from '@/src/constants/Colors';
-import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
+import { useRouter, Stack, useLocalSearchParams, Redirect } from 'expo-router';
 import { supabase } from '@/src/lib/supabase';
 
 const SignInScreen = () => {
@@ -46,7 +46,7 @@ const SignInScreen = () => {
         if (error) {
             setError(error.message);
         } else {
-            router.push('/(user)');
+            <Redirect href='/(auth)'/>
         }
     }
 
@@ -56,7 +56,7 @@ const SignInScreen = () => {
         if (error) {
             setError(error.message);
         } else {
-            router.push('/(user)');
+            <Redirect href='/(auth)'/>
         }
     }
 

@@ -46,7 +46,7 @@ const SignInScreen = () => {
         if (error) {
             setError(error.message);
         } else {
-            console.log('SignedUp');
+            router.push('/(user)');
         }
     }
 
@@ -56,7 +56,7 @@ const SignInScreen = () => {
         if (error) {
             setError(error.message);
         } else {
-            console.log('SignedIn');
+            router.push('/(user)');
         }
     }
 

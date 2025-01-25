@@ -1,11 +1,11 @@
 import { createContext, PropsWithChildren, useState } from "react";
 import { useContext } from "react";
-import { CartItem, Product, PizzaSize } from '../types';
+import { CartItem, PizzaSize, Tables } from '../types';
 import { randomUUID } from 'expo-crypto';
 
 type CartType = {
     items: CartItem[];
-    onAddItem: (product: Product, size: PizzaSize ) => void;
+    onAddItem: (product: Tables<'products'>, size: PizzaSize ) => void;
     onUpdateQuantity: (id: string, amount: -1 | 1) => void;
     total: number;
 };
@@ -20,7 +20,7 @@ const CartContext = createContext<CartType>({
 const CartProvider = ({children} : PropsWithChildren) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addItem = (product: Product, size: PizzaSize) => {
+  const addItem = (product: Tables<'products'>, size: PizzaSize) => {
     const existingItem = items.find((item) => item.product_id === product.id && item.size === size);
     if (existingItem) {
         updateQuantity(existingItem.id, 1);

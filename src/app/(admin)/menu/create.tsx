@@ -1,19 +1,32 @@
-import { View, Text, StyleSheet, TextInput, Image, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Image, Alert, Platform, ActivityIndicator } from 'react-native';
 import Button  from '@/src/components/Button';
 import { useState } from 'react';
 import defaultPizzaImage from '@/src/constants/DefaultPizzaImage';
 import Colors from '@/src/constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useInsertProduct } from '@/src/api/products/create';
+import { useUpdateProduct } from '@/src/api/products/update';
+import { useProduct } from '@/src/api/products/show';
 
 const createProduct = () => {
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
-    const [image, setImage] = useState<string|null>(null);
-    const [error, setError] = useState('');
-    const {id}= useLocalSearchParams();
-    const isUpdate = !!id;
-
+    const { id : idString } = useLocalSearchParams();
+    const isUpdate = !!idString;
+    const id = parseFloat(typeof idString === 'string' ? idString : idString?.[0]);
+    const { data: product, error: fetchProductError, isLoading} = isUpdate ? useProduct(id) : {};
+    const [name, setName] = useState(isUpdate ? product.name : '');
+    const [price, setPrice] = useState(isUpdate ? product.price : '');
+    const [image, setImage] = useState<string|null>(isUpdate ? product.image : null);
+    const [error, setError] = useState(isUpdate && fetchProductError ? fetchProductError.message : '');
+    const {mutate: insertProduct} = useInsertProduct();
+    const {mutate: updateProduct} = useUpdateProduct();
+    const router = useRouter();
+    if(isLoading) {
+        return (<ActivityIndicator/>)
+    }
+    if(fetchProductError) { 
+        setError(fetchProductError?.message);
+    }
     const resetValues = () => {
         setName('');
         setPrice('');
@@ -29,10 +42,6 @@ const createProduct = () => {
             setError('price is required');
             return false;
         }
-        if (!image) {
-            setError('image is required');
-            return false;
-        }
         if (isNaN(parseFloat(price))) {
             setError('price is not a number');
             return false;
@@ -44,16 +53,25 @@ const createProduct = () => {
         if (!validate()) {
             return;
         }
-        console.log('update product');
-        resetValues();
+        updateProduct({id, name, image, price: parseFloat(price)}, {
+            onSuccess: () => {
+                resetValues();
+                router.back();
+            }
+        })
     }
 
     const onCreate = () => {
         if (!validate()) {
             return;
         }
-        console.log('create product ');
-        resetValues();
+         insertProduct({name,price: parseFloat(price), image}, {
+            onSuccess: () => {
+                resetValues();
+                router.back();
+            }
+         });
+        
     };
 
     const onSubmit = () => {

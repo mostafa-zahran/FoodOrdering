@@ -8,6 +8,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useInsertProduct } from '@/src/api/products/create';
 import { useUpdateProduct } from '@/src/api/products/update';
 import { useProduct } from '@/src/api/products/show';
+import { useDeleteProduct } from '@/src/api/products/delete';
 
 const createProduct = () => {
     const { id : idString } = useLocalSearchParams();
@@ -20,6 +21,7 @@ const createProduct = () => {
     const [error, setError] = useState(isUpdate && fetchProductError ? fetchProductError.message : '');
     const {mutate: insertProduct} = useInsertProduct();
     const {mutate: updateProduct} = useUpdateProduct();
+    const {mutate: deleteProduct} = useDeleteProduct();
     const router = useRouter();
     if(isLoading) {
         return (<ActivityIndicator/>)
@@ -83,7 +85,13 @@ const createProduct = () => {
     }
 
     const onDelete = () => {
-        console.log('delete product');
+        deleteProduct(
+            id,{
+                onSuccess: () => {
+                    router.replace('/menu/');
+                }
+            }
+        );
     }
     const confirmDelete = () => {
        Alert.alert('Delete Product', 'Are you sure you want to delete this product?', [

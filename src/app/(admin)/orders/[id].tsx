@@ -8,18 +8,20 @@ import { OrderStatusList } from '@/src/types';
 import Colors from '@/src/constants/Colors';
 import { useAdminOrderDetails } from '@/src/api/orders/show';
 import { useUpdateOrder } from '@/src/api/orders/update';
+import { useUpdateOrderSubscription } from '@/src/api/update_supscription';
 
 const OrderDetails = () => {
   const { mutate: updateOrder } = useUpdateOrder();
     const {id: idString} = useLocalSearchParams();
     const id = parseFloat(typeof idString === 'string' ? idString : idString[0]);
     const { data: order, error, isLoading } = useAdminOrderDetails(id);
+    useUpdateOrderSubscription(id);
     if(isLoading) return (<ActivityIndicator/>);
     if(error) return(<Text>Failed to fetch</Text>);
     if(!order) {
         return <View><Text>Order not found</Text></View>
     }
-
+  
     const onUpdate = (status: string) => {
       updateOrder({id, status});
     }
